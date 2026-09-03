@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gia sư Tiếng Anh 7 - Global Success</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Roboto, Helvetica, sans-serif; }
+        body { background: #f0fdf4; display: flex; justify-content: center; height: 100dvh; padding: 10px; }
+        .app-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(22, 163, 74, 0.1); overflow: hidden; }
+        
+        .header { background: #16a34a; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { font-size: 18px; }
+        
+        .toolbar { padding: 10px 15px; background: #dcfce7; border-bottom: 2px solid #bbf7d0; display: flex; gap: 10px; align-items: center; }
+        select { padding: 8px; border-radius: 8px; border: 1px solid #16a34a; flex: 1; outline: none; font-weight: bold; color: #16a34a; }
+        
+        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; }
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; }
+        .tutor-wrapper { align-self: flex-start; }
+        .student-wrapper { align-self: flex-end; }
+        
+        .msg { padding: 12px 16px; border-radius: 14px; font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+        .tutor { background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .student { background: #f97316; color: white; border-bottom-right-radius: 2px; }
+
+        .btn-translate { background: none; border: none; color: #16a34a; font-size: 12px; font-weight: bold; cursor: pointer; text-align: left; padding-top: 5px; }
+        .translated-text { font-size: 13px; color: #475569; background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #16a34a; margin-top: 5px; display: none; }
+
+        .input-bar { padding: 12px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; }
+        textarea { flex: 1; height: 46px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; padding: 12px 16px; outline: none; resize: none; font-size: 14px; }
+        
+        button { padding: 0 16px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; height: 46px; transition: 0.2s; }
+        .btn-mic { background: #ef4444; color: white; padding: 0 14px; font-size: 18px; }
+        .btn-send { background: #16a34a; color: white; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 100; padding: 15px; }
+        .modal-card { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; }
+        .modal-card input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; outline: none;}
+        .modal-card button { background: #f97316; color: white; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="modal" id="startModal">
+    <div class="modal-card">
+        <h2 style="color: #16a34a;">👋 Chào mừng em đến lớp!</h2>
+        <p style="color: #64748b; font-size: 14px; margin-top: 5px;">Thầy cô AI sẽ đồng hành cùng em học Tiếng Anh 7</p>
+        <input type="text" id="studentName" placeholder="Tên của em là gì? (Ví dụ: Minh, Lan)">
+        
+        <div style="text-align: left; margin-bottom: 15px;">
+            <label style="font-size: 13px; font-weight: bold; color: #333;">Chọn giáo viên (Giọng chuẩn):</label>
+            <select id="voiceSelect" style="width: 100%; margin-top: 5px; border: 1px solid #ccc; color: #333; outline: none;"></select>
+        </div>
+
+        <button onclick="startClass()">Vào lớp học 🚀</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="header">
+        <h2>📚 Tiếng Anh 7 Tutor</h2>
+        <span style="font-size: 13px; font-weight: bold;">Học sinh: <span id="displayStudentName"></span></span>
+    </div>
+    
+    <div class="toolbar">
+        <select id="unitSelect" onchange="changeUnit()">
+            <option value="Unit 1: Hobbies">Unit 1: Hobbies (Sở thích)</option>
+            <option value="Unit 2: Healthy Living">Unit 2: Healthy Living (Sống khỏe)</option>
+            <option value="Unit 3: Community Service">Unit 3: Community Service (HĐ Cộng đồng)</option>
+            <option value="Unit 4: Music and Arts">Unit 4: Music and Arts (Âm nhạc & Nghệ thuật)</option>
+        </select>
+        <button style="background: #f97316; color: white; height: 35px; border-radius: 8px; padding: 0 12px; font-size: 13px;" onclick="requestGrammarHelp()">Ngữ pháp 💡</button>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-bar">
+        <textarea id="userInput" placeholder="Nhắn tin cho thầy/cô hoặc bấm Micro..."></textarea>
+        <button class="btn-mic" id="micBtn" onclick="toggleMic()">🎤</button>
+        <button class="btn-send" id="sendBtn" onclick="sendAnswer()">Gửi</button>
+    </div>
+</div>
+
+<script>
+    let history = [];
+    let studentName = '';
+    let recognition;
+    let availableVoices = [];
+    let isProcessing = false;
+
+    function loadVoices() {
+        if (!('speechSynthesis' in window)) return;
+        const all = window.speechSynthesis.getVoices();
+        
+        const ukVoices = all.filter(v => (v.lang || '').toLowerCase().includes('en-gb'));
+        const usVoices = all.filter(v => (v.lang || '').toLowerCase().includes('en-us'));
+        
+        const cleanVoices = [...ukVoices, ...usVoices].filter(v => {
+            const bad = ['whisper', 'zarvox', 'trinoids', 'boing', 'bells'];
+            return !bad.some(b => v.name.toLowerCase().includes(b));
+        }).slice(0, 10);
+
+        const sel = document.getElementById('voiceSelect');
+        sel.innerHTML = '';
+        cleanVoices.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.name;
+            const flag = v.lang.includes('gb') ? '🇬🇧 UK' : '🇺🇸 US';
+            opt.textContent = `${flag} - ${v.name.replace(/Google|Microsoft/gi, '').trim()}`;
+            sel.appendChild(opt);
+        });
+    }
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }
+
+    function unlockAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.resume();
+            const silent = new SpeechSynthesisUtterance('');
+            silent.volume = 0;
+            window.speechSynthesis.speak(silent);
+        }
+    }
+
+    function speakText(text) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
+        const utt = new SpeechSynthesisUtterance(text);
+        const sel = availableVoices.find(v => v.name === document.getElementById('voiceSelect').value);
+        if (sel) utt.voice = sel;
+        utt.rate = 0.9;
+        window.speechSynthesis.speak(utt);
+    }
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRec();
+        recognition.lang = 'en-US';
+        recognition.onresult = (e) => {
+            document.getElementById('userInput').value += ' ' + e.results[0][0].transcript;
+        };
+    }
+
+    function toggleMic() {
+        unlockAudio();
+        if (recognition) { try { recognition.start(); } catch(e){} }
+        else { alert('Trình duyệt chưa hỗ trợ Micro.'); }
+    }
+
+    function startClass() {
+        const name = document.getElementById('studentName').value.trim();
+        if (!name) return alert('Em nhớ nhập tên nhé!');
+        studentName = name;
+        document.getElementById('displayStudentName').innerText = name;
+        document.getElementById('startModal').style.display = 'none';
+        unlockAudio();
+        
+        history.push({ role: 'student', text: `Hello, my name is ${studentName}. Let's learn ${document.getElementById('unitSelect').value} together!` });
+        fetchTutorResponse();
+    }
+
+    function changeUnit() {
+        const unit = document.getElementById('unitSelect').value;
+        addMessage('tutor', `🌟 Chào mừng em đến với ${unit}! Thầy/Cô sẽ giúp em ôn tập từ vựng và ngữ pháp. Em đã sẵn sàng chưa?`);
+        history.push({ role: 'student', text: `I am ready to learn ${unit}. Ask me a question about it.` });
+        fetchTutorResponse();
+    }
+
+    function requestGrammarHelp() {
+        history.push({ role: 'student', text: `Can you explain the main grammar point of ${document.getElementById('unitSelect').value} in Vietnamese please?` });
+        addMessage('student', 'Thầy/cô giải thích giúp em ngữ pháp bài này nhé!');
+        fetchTutorResponse();
+    }
+
+    document.getElementById('userInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAnswer(); }
+    });
+
+    function sendAnswer() {
+        if (isProcessing) return;
+        const text = document.getElementById('userInput').value.trim();
+        if (!text) return;
+        
+        addMessage('student', text);
+        history.push({ role: 'student', text });
+        document.getElementById('userInput').value = '';
+        fetchTutorResponse();
+    }
+
+    function addMessage(sender, text) {
+        const wrap = document.createElement('div');
+        wrap.className = `msg-wrapper ${sender}-wrapper`;
+        const m = document.createElement('div');
+        m.className = `msg ${sender}`;
+        m.innerText = text;
+        wrap.appendChild(m);
+
+        if (sender === 'tutor') {
+            const trBtn = document.createElement('button');
+            trBtn.className = 'btn-translate';
+            trBtn.innerText = '🇻🇳 Dịch ra tiếng Việt';
+            const trBox = document.createElement('div');
+            trBox.className = 'translated-text';
+            trBtn.onclick = async () => {
+                if (trBox.style.display === 'block') { trBox.style.display = 'none'; return; }
+                trBox.innerText = 'Đang dịch...';
+                trBox.style.display = 'block';
+                try {
+                    const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|vi`);
+                    const d = await r.json();
+                    trBox.innerText = d.responseData.translatedText;
+                } catch (e) { trBox.innerText = 'Lỗi dịch.'; }
+            };
+            wrap.appendChild(trBtn);
+            wrap.appendChild(trBox);
+            
+            speakText(text); 
+        }
+        document.getElementById('chatBox').appendChild(wrap);
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+    }
+
+    async function fetchTutorResponse() {
+        isProcessing = true;
+        const btn = document.getElementById('sendBtn');
+        btn.innerText = '...';
+        
+        try {
+            const res = await fetch('/api/tutor', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    conversationHistory: history, 
+                    studentName: studentName,
+                    currentUnit: document.getElementById('unitSelect').value
+                })
+            });
+            const d = await res.json();
+            if (d.reply) {
+                addMessage('tutor', d.reply);
+                history.push({ role: 'tutor', text: d.reply });
+            }
+        } catch (e) {
+            addMessage('tutor', 'Lỗi mạng rồi, em nói lại được không? 😅');
+        } finally {
+            isProcessing = false;
+            btn.innerText = 'Gửi';
+        }
+    }
+</script>
+
+</body>
+</html>
