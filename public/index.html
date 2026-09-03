@@ -9,14 +9,18 @@
         body { background: #f0fdf4; display: flex; justify-content: center; height: 100dvh; padding: 10px; }
         .app-container { width: 100%; max-width: 600px; display: flex; flex-direction: column; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(22, 163, 74, 0.1); overflow: hidden; }
         
-        .header { background: #16a34a; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header { background: #16a34a; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .header h2 { font-size: 18px; }
         
-        .toolbar { padding: 10px 15px; background: #dcfce7; border-bottom: 2px solid #bbf7d0; display: flex; gap: 10px; align-items: center; }
-        select { padding: 8px; border-radius: 8px; border: 1px solid #16a34a; flex: 1; outline: none; font-weight: bold; color: #16a34a; }
+        .toolbar { padding: 10px 15px; background: #dcfce7; border-bottom: 1px solid #bbf7d0; display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+        select { padding: 8px; border-radius: 8px; border: 1px solid #16a34a; flex: 1; outline: none; font-weight: bold; color: #16a34a; font-size: 13px; }
         
-        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; }
-        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; }
+        .skills-bar { display: flex; gap: 6px; padding: 10px 15px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; overflow-x: auto; flex-shrink: 0; white-space: nowrap; }
+        .skill-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #cbd5e1; background: white; color: #475569; font-size: 12.5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .skill-btn:hover, .skill-btn.active { background: #f97316; color: white; border-color: #f97316; }
+
+        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; background: #f8fafc; }
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 88%; }
         .tutor-wrapper { align-self: flex-start; }
         .student-wrapper { align-self: flex-end; }
         
@@ -24,20 +28,21 @@
         .tutor { background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .student { background: #f97316; color: white; border-bottom-right-radius: 2px; }
 
-        .btn-translate { background: none; border: none; color: #16a34a; font-size: 12px; font-weight: bold; cursor: pointer; text-align: left; padding-top: 5px; }
-        .translated-text { font-size: 13px; color: #475569; background: #f1f5f9; padding: 8px; border-radius: 6px; border-left: 3px solid #16a34a; margin-top: 5px; display: none; }
+        /* Khối hiển thị song ngữ */
+        .en-text { font-weight: 500; }
+        .vn-text { font-size: 13.5px; color: #475569; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-style: italic; }
 
-        .input-bar { padding: 12px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; }
-        textarea { flex: 1; height: 46px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; padding: 12px 16px; outline: none; resize: none; font-size: 14px; }
+        .input-bar { padding: 10px 14px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        textarea { flex: 1; height: 44px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; padding: 11px 16px; outline: none; resize: none; font-size: 14px; }
         
-        button { padding: 0 16px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; height: 46px; transition: 0.2s; }
-        .btn-mic { background: #ef4444; color: white; padding: 0 14px; font-size: 18px; }
-        .btn-send { background: #16a34a; color: white; }
+        button.action-btn { padding: 0 16px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; height: 44px; transition: 0.2s; color: white; }
+        .btn-mic { background: #ef4444; padding: 0 14px; font-size: 18px; }
+        .btn-send { background: #16a34a; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 100; padding: 15px; }
         .modal-card { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; }
         .modal-card input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; outline: none;}
-        .modal-card button { background: #f97316; color: white; width: 100%; margin-top: 10px; }
+        .modal-card button { background: #f97316; color: white; width: 100%; margin-top: 10px; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: bold; border: none;}
     </style>
 </head>
 <body>
@@ -49,8 +54,8 @@
         <input type="text" id="studentName" placeholder="Tên của em là gì? (Ví dụ: Minh, Lan)">
         
         <div style="text-align: left; margin-bottom: 15px;">
-            <label style="font-size: 13px; font-weight: bold; color: #333;">Chọn giáo viên (Giọng chuẩn):</label>
-            <select id="voiceSelect" style="width: 100%; margin-top: 5px; border: 1px solid #ccc; color: #333; outline: none;"></select>
+            <label style="font-size: 13px; font-weight: bold; color: #333;">Chọn giáo viên (Giọng chuẩn Anh/Mỹ):</label>
+            <select id="voiceSelect" style="width: 100%; margin-top: 5px; border: 1px solid #ccc; color: #333; outline: none; padding: 8px; border-radius: 6px;"></select>
         </div>
 
         <button onclick="startClass()">Vào lớp học 🚀</button>
@@ -65,20 +70,34 @@
     
     <div class="toolbar">
         <select id="unitSelect" onchange="changeUnit()">
-            <option value="Unit 1: Hobbies">Unit 1: Hobbies (Sở thích)</option>
-            <option value="Unit 2: Healthy Living">Unit 2: Healthy Living (Sống khỏe)</option>
-            <option value="Unit 3: Community Service">Unit 3: Community Service (HĐ Cộng đồng)</option>
-            <option value="Unit 4: Music and Arts">Unit 4: Music and Arts (Âm nhạc & Nghệ thuật)</option>
+            <option value="Unit 1: Hobbies">Unit 1: Hobbies</option>
+            <option value="Unit 2: Healthy Living">Unit 2: Healthy Living</option>
+            <option value="Unit 3: Community Service">Unit 3: Community Service</option>
+            <option value="Unit 4: Music and Arts">Unit 4: Music and Arts</option>
+            <option value="Unit 5: Food and Drink">Unit 5: Food and Drink</option>
+            <option value="Unit 6: A Visit to a School">Unit 6: A Visit to a School</option>
+            <option value="Unit 7: Traffic">Unit 7: Traffic</option>
+            <option value="Unit 8: Films">Unit 8: Films</option>
+            <option value="Unit 9: Festivals around the World">Unit 9: Festivals</option>
+            <option value="Unit 10: Energy Sources">Unit 10: Energy Sources</option>
+            <option value="Unit 11: Travelling in the Future">Unit 11: Travelling in the Future</option>
+            <option value="Unit 12: English-Speaking Countries">Unit 12: English-Speaking Countries</option>
         </select>
-        <button style="background: #f97316; color: white; height: 35px; border-radius: 8px; padding: 0 12px; font-size: 13px;" onclick="requestGrammarHelp()">Ngữ pháp 💡</button>
+    </div>
+
+    <div class="skills-bar">
+        <button class="skill-btn active" onclick="setSkill(this, 'Giao tiếp chung')">Giao tiếp 🗣️</button>
+        <button class="skill-btn" onclick="setSkill(this, 'Từ vựng')">Từ vựng 📖</button>
+        <button class="skill-btn" onclick="setSkill(this, 'Ngữ pháp')">Ngữ pháp 💡</button>
+        <button class="skill-btn" onclick="setSkill(this, 'Luyện đọc')">Luyện đọc 📚</button>
     </div>
 
     <div class="chat-box" id="chatBox"></div>
 
     <div class="input-bar">
         <textarea id="userInput" placeholder="Nhắn tin cho thầy/cô hoặc bấm Micro..."></textarea>
-        <button class="btn-mic" id="micBtn" onclick="toggleMic()">🎤</button>
-        <button class="btn-send" id="sendBtn" onclick="sendAnswer()">Gửi</button>
+        <button class="action-btn btn-mic" id="micBtn" onclick="toggleMic()">🎤</button>
+        <button class="action-btn btn-send" id="sendBtn" onclick="sendAnswer()">Gửi</button>
     </div>
 </div>
 
@@ -88,16 +107,15 @@
     let recognition;
     let availableVoices = [];
     let isProcessing = false;
+    let currentSkill = 'Giao tiếp chung';
 
     function loadVoices() {
         if (!('speechSynthesis' in window)) return;
         const all = window.speechSynthesis.getVoices();
+        const enVoices = all.filter(v => (v.lang || '').toLowerCase().includes('en-gb') || (v.lang || '').toLowerCase().includes('en-us'));
         
-        const ukVoices = all.filter(v => (v.lang || '').toLowerCase().includes('en-gb'));
-        const usVoices = all.filter(v => (v.lang || '').toLowerCase().includes('en-us'));
-        
-        const cleanVoices = [...ukVoices, ...usVoices].filter(v => {
-            const bad = ['whisper', 'zarvox', 'trinoids', 'boing', 'bells'];
+        const cleanVoices = enVoices.filter(v => {
+            const bad = ['whisper', 'zarvox', 'trinoids', 'boing', 'bells', 'deranged'];
             return !bad.some(b => v.name.toLowerCase().includes(b));
         }).slice(0, 10);
 
@@ -126,11 +144,19 @@
         }
     }
 
+    // BỘ LỌC ÂM THANH SẠCH: Loại bỏ emoji và dấu chấm than/chấm hỏi thừa
     function speakText(text) {
         if (!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
         window.speechSynthesis.resume();
-        const utt = new SpeechSynthesisUtterance(text);
+        
+        // Loại bỏ emoji và các ký tự đặc biệt (*, ", _)
+        let cleanText = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+        cleanText = cleanText.replace(/[*"“”_]/g, '');
+        // Biến ... thành một dấu chấm để tránh máy đọc "chấm chấm chấm"
+        cleanText = cleanText.replace(/\.\.\./g, '.');
+
+        const utt = new SpeechSynthesisUtterance(cleanText);
         const sel = availableVoices.find(v => v.name === document.getElementById('voiceSelect').value);
         if (sel) utt.voice = sel;
         utt.rate = 0.9;
@@ -166,14 +192,16 @@
 
     function changeUnit() {
         const unit = document.getElementById('unitSelect').value;
-        addMessage('tutor', `🌟 Chào mừng em đến với ${unit}! Thầy/Cô sẽ giúp em ôn tập từ vựng và ngữ pháp. Em đã sẵn sàng chưa?`);
-        history.push({ role: 'student', text: `I am ready to learn ${unit}. Ask me a question about it.` });
+        history.push({ role: 'student', text: `I want to study ${unit} now.` });
         fetchTutorResponse();
     }
 
-    function requestGrammarHelp() {
-        history.push({ role: 'student', text: `Can you explain the main grammar point of ${document.getElementById('unitSelect').value} in Vietnamese please?` });
-        addMessage('student', 'Thầy/cô giải thích giúp em ngữ pháp bài này nhé!');
+    function setSkill(btnElement, skill) {
+        document.querySelectorAll('.skill-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        currentSkill = skill;
+        
+        history.push({ role: 'student', text: `Let's switch to practicing: ${skill} for this unit.` });
         fetchTutorResponse();
     }
 
@@ -186,43 +214,33 @@
         const text = document.getElementById('userInput').value.trim();
         if (!text) return;
         
-        addMessage('student', text);
+        addStudentMessage(text);
         history.push({ role: 'student', text });
         document.getElementById('userInput').value = '';
         fetchTutorResponse();
     }
 
-    function addMessage(sender, text) {
+    function addStudentMessage(text) {
         const wrap = document.createElement('div');
-        wrap.className = `msg-wrapper ${sender}-wrapper`;
-        const m = document.createElement('div');
-        m.className = `msg ${sender}`;
-        m.innerText = text;
-        wrap.appendChild(m);
-
-        if (sender === 'tutor') {
-            const trBtn = document.createElement('button');
-            trBtn.className = 'btn-translate';
-            trBtn.innerText = '🇻🇳 Dịch ra tiếng Việt';
-            const trBox = document.createElement('div');
-            trBox.className = 'translated-text';
-            trBtn.onclick = async () => {
-                if (trBox.style.display === 'block') { trBox.style.display = 'none'; return; }
-                trBox.innerText = 'Đang dịch...';
-                trBox.style.display = 'block';
-                try {
-                    const r = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|vi`);
-                    const d = await r.json();
-                    trBox.innerText = d.responseData.translatedText;
-                } catch (e) { trBox.innerText = 'Lỗi dịch.'; }
-            };
-            wrap.appendChild(trBtn);
-            wrap.appendChild(trBox);
-            
-            speakText(text); 
-        }
+        wrap.className = `msg-wrapper student-wrapper`;
+        wrap.innerHTML = `<div class="msg student">${text}</div>`;
         document.getElementById('chatBox').appendChild(wrap);
         document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+    }
+
+    function addTutorMessage(englishObj, vietnameseObj) {
+        const wrap = document.createElement('div');
+        wrap.className = `msg-wrapper tutor-wrapper`;
+        wrap.innerHTML = `
+            <div class="msg tutor">
+                <div class="en-text">${englishObj}</div>
+                <div class="vn-text">${vietnameseObj}</div>
+            </div>`;
+        document.getElementById('chatBox').appendChild(wrap);
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+        
+        // CHỈ cho phép đọc phần Tiếng Anh (chuẩn giọng US/UK)
+        speakText(englishObj); 
     }
 
     async function fetchTutorResponse() {
@@ -237,16 +255,17 @@
                 body: JSON.stringify({ 
                     conversationHistory: history, 
                     studentName: studentName,
-                    currentUnit: document.getElementById('unitSelect').value
+                    currentUnit: document.getElementById('unitSelect').value,
+                    currentSkill: currentSkill
                 })
             });
             const d = await res.json();
-            if (d.reply) {
-                addMessage('tutor', d.reply);
-                history.push({ role: 'tutor', text: d.reply });
+            if (d.english && d.vietnamese) {
+                addTutorMessage(d.english, d.vietnamese);
+                history.push({ role: 'tutor', english: d.english, vietnamese: d.vietnamese });
             }
         } catch (e) {
-            addMessage('tutor', 'Lỗi mạng rồi, em nói lại được không? 😅');
+            addTutorMessage("I'm having a small connection issue. Could you repeat that?", "Thầy/Cô đang gặp chút vấn đề mạng. Em nói lại nhé! 😅");
         } finally {
             isProcessing = false;
             btn.innerText = 'Gửi';
